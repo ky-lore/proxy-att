@@ -35,8 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         user_agent: navigator.userAgent,
         screen_resolution: `${window.innerWidth}x${window.innerHeight}`,
         session_id: crypto.randomUUID(),
-        first_touch: new Date().toISOString(),
-        tel_click_log: {}
+        first_touch: new Date().toISOString()
       };
 
       localStorage.setItem('attribution_data', JSON.stringify(newSession));
@@ -61,19 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.warn(`${LOG_PREFIX} No session ID found, aborting send`);
         return;
       }
-
-      const now = Date.now();
-      const lastClickTime = data.tel_click_log?.[href]?.lastClick || 0;
-      const alreadyLogged = data.tel_click_log?.[href]?.logged || false;
-
-      if (alreadyLogged || now - lastClickTime < 30000) {
-        console.log(`${LOG_PREFIX} Duplicate or rapid click detected — skipping send`);
-        return;
-      }
-
-      data.tel_click_log = data.tel_click_log || {};
-      data.tel_click_log[href] = { lastClick: now, logged: true };
-      localStorage.setItem('attribution_data', JSON.stringify(data));
 
       const payload = {
         ...data,
